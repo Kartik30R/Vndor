@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1056774929530",
+    "project_id": "vndor-e5506",
+    "storage_bucket": "vndor-e5506.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1056774929530:android:ccf0311ea7215f7eadcfc3",
+        "android_client_info": {
+          "package_name": "com.example.vndor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfFt-O5rGpYk6Hoq6hI-t2DOkZmEm5VWk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
