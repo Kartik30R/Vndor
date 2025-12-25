@@ -46,28 +46,34 @@ class AuthViewModel extends ChangeNotifier {
       _setState(AuthState.unauthenticated);
     }
   }
-
-  Future<void> login(String email, String password) async {
-    _setState(AuthState.loading);
-    try {
-      user = await loginUseCase(email, password);
-      _setState(AuthState.authenticated);
-    } catch (e) {
-      errorMessage = e is Failure ? e.message : 'Login failed';
-      _setState(AuthState.error);
-    }
+  
+  Future<bool> login(String email, String password) async {
+  _setState(AuthState.loading);
+  try {
+    user = await loginUseCase(email, password);
+    _setState(AuthState.authenticated);
+    return true;
+  } catch (e) {
+    errorMessage = e is Failure ? e.message : 'Login failed';
+    _setState(AuthState.error);
+    return false;
   }
+}
 
-  Future<void> register(String email, String password) async {
-    _setState(AuthState.loading);
-    try {
-      user = await registerUseCase(email, password);
-      _setState(AuthState.authenticated);
-    } catch (e) {
-      errorMessage = e is Failure ? e.message : 'Registration failed';
-      _setState(AuthState.error);
-    }
+Future<bool> register(String email, String password) async {
+  _setState(AuthState.loading);
+  try {
+    user = await registerUseCase(email, password);
+    _setState(AuthState.authenticated);
+    return true;
+  } catch (e) {
+    errorMessage = e is Failure ? e.message : 'Registration failed';
+    _setState(AuthState.error);
+    return false;
   }
+}
+
+
 
   Future<void> logout() async {
     await repository.logout();

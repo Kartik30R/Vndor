@@ -29,20 +29,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<AuthViewModel>();
-WidgetsBinding.instance.addPostFrameCallback((_) {
-  if (!mounted) return;
-
-  if (vm.state == AuthState.authenticated && vm.user != null) {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (_) => AppShell(
-          vendorId: vm.user!.uid,
-        ),
-      ),
-      (route) => false, 
-    );
-  }
-});
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
@@ -83,12 +69,10 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
                     'Login to manage your store',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey.shade600,
+                      color: Colors.grey,
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
                   TextFormField(
                     controller: emailController,
                     validator: Validators.email,
@@ -97,9 +81,7 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
                       prefixIcon: Icon(Icons.email_outlined),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
                   TextFormField(
                     controller: passwordController,
                     obscureText: true,
@@ -109,9 +91,7 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
                       prefixIcon: Icon(Icons.lock_outline),
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: meeshoPink,
@@ -122,12 +102,24 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
                     ),
                     onPressed: vm.state == AuthState.loading
                         ? null
-                        : () {
+                        : () async {
                             if (_formKey.currentState!.validate()) {
-                              vm.login(
+                              final success = await vm.login(
                                 emailController.text.trim(),
                                 passwordController.text.trim(),
                               );
+
+                              if (!mounted) return;
+
+                              if (success) {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        AppShell(vendorId: vm.user!.uid),
+                                  ),
+                                  (_) => false,
+                                );
+                              }
                             }
                           },
                     child: vm.state == AuthState.loading
@@ -147,7 +139,6 @@ WidgetsBinding.instance.addPostFrameCallback((_) {
                             ),
                           ),
                   ),
-
                   if (vm.state == AuthState.error) ...[
                     const SizedBox(height: 16),
                     AppError(

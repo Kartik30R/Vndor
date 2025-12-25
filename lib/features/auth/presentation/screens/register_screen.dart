@@ -29,20 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<AuthViewModel>();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-  if (!mounted) return;
 
-  if (vm.state == AuthState.authenticated && vm.user != null) {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (_) => AppShell(
-          vendorId: vm.user!.uid,
-        ),
-      ),
-      (route) => false, 
-    );
-  }
-});
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
       appBar: AppBar(
@@ -82,12 +69,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     'Start selling with vndor',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey.shade600,
+                      color: Colors.grey,
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
                   TextFormField(
                     controller: emailController,
                     validator: Validators.email,
@@ -96,9 +81,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.email_outlined),
                     ),
                   ),
-
                   const SizedBox(height: 16),
-
                   TextFormField(
                     controller: passwordController,
                     obscureText: true,
@@ -108,9 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.lock_outline),
                     ),
                   ),
-
                   const SizedBox(height: 24),
-
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: meeshoPink,
@@ -121,13 +102,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     onPressed: vm.state == AuthState.loading
                         ? null
-                        : () {
+                        : () async {
                             if (_formKey.currentState!.validate()) {
-                              vm.register(
+                              final success = await vm.register(
                                 emailController.text.trim(),
                                 passwordController.text.trim(),
                               );
-                              
+
+                              if (!mounted) return;
+
+                              if (success) {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        AppShell(vendorId: vm.user!.uid),
+                                  ),
+                                  (_) => false,
+                                );
+                              }
                             }
                           },
                     child: vm.state == AuthState.loading
@@ -147,7 +139,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                   ),
-
                   if (vm.state == AuthState.error) ...[
                     const SizedBox(height: 16),
                     AppError(
