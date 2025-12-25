@@ -21,6 +21,8 @@ class AddProductScreen extends StatefulWidget {
 class _AddProductScreenState extends State<AddProductScreen> {
   static const Color meeshoPink = Color(0xFFF43397);
 
+  bool _isSubmitting = false;
+
   final _formKey = GlobalKey<FormState>();
   final picker = ImagePicker();
 
@@ -121,13 +123,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  onPressed: vm.state == ProductState.submitting
+                  onPressed:
+                      (_isSubmitting || vm.state == ProductState.submitting)
                       ? null
                       : () async {
-                          FocusScope.of(context).unfocus(); 
-                         
+                          FocusScope.of(context).unfocus();
+
                           if (!_formKey.currentState!.validate()) return;
-                          
+                          setState(() => _isSubmitting = true);
+
                           String imageUrl = widget.product?.imageUrl ?? '';
 
                           if (image != null) {
