@@ -104,7 +104,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ? null
                         : () async {
                             if (_formKey.currentState!.validate()) {
-                              final success = await vm.register(
+                              final auth = context.read<AuthViewModel>();
+                              final success = await auth.register(
                                 emailController.text.trim(),
                                 passwordController.text.trim(),
                               );
@@ -112,12 +113,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               if (!mounted) return;
 
                               if (success) {
+                                final uid = auth.user!.uid;
                                 Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        AppShell(vendorId: vm.user!.uid),
+                                    builder: (_) => AppShell(vendorId: uid),
                                   ),
                                   (_) => false,
+                                );
+                              } else {
+                                final message = auth.errorMessage ?? 'Registration failed';
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(message)),
                                 );
                               }
                             }

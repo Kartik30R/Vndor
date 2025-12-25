@@ -104,7 +104,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ? null
                         : () async {
                             if (_formKey.currentState!.validate()) {
-                              final success = await vm.login(
+                              final auth = context.read<AuthViewModel>();
+                              final success = await auth.login(
                                 emailController.text.trim(),
                                 passwordController.text.trim(),
                               );
@@ -112,12 +113,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (!mounted) return;
 
                               if (success) {
+                                final uid = auth.user!.uid;
                                 Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        AppShell(vendorId: vm.user!.uid),
+                                    builder: (_) => AppShell(vendorId: uid),
                                   ),
                                   (_) => false,
+                                );
+                              } else {
+                                final message = auth.errorMessage ?? 'Login failed';
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(message)),
                                 );
                               }
                             }

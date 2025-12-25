@@ -97,7 +97,9 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () async {
-                  await authVM.logout();
+                  final auth = context.read<AuthViewModel>();
+                  await auth.logout();
+                  if (!context.mounted) return;
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (_) => AuthLandingScreen()),
